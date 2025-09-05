@@ -5,57 +5,61 @@
   <title>🐾 Animal & File Uploader</title>
   <style>
     body {
-      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      font-family: 'Segoe UI', sans-serif;
       background: #f5f7fa;
       margin: 0;
       padding: 0;
       color: #333;
+      display: flex;
+      flex-direction: column;
+      min-height: 100vh;
     }
 
     header {
       background: linear-gradient(135deg, #667eea, #764ba2);
       color: #fff;
       text-align: center;
-      padding: 30px 20px;
-      box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+      padding: 25px;
+      box-shadow: 0 4px 8px rgba(0,0,0,0.1);
     }
 
     header h1 {
       margin: 0;
-      font-size: 2rem;
+      font-size: 1.8rem;
     }
 
-    .container {
-      max-width: 1000px;
-      margin: 40px auto;
-      padding: 0 20px;
+    .main {
+      flex: 1;
       display: grid;
-      grid-template-columns: 1fr;
-      gap: 30px;
+      grid-template-columns: 2fr 1fr;
+      gap: 25px;
+      max-width: 1200px;
+      margin: 30px auto;
+      padding: 0 20px;
     }
 
     .box {
       background: #fff;
       border-radius: 16px;
-      padding: 25px;
+      padding: 20px;
       box-shadow: 0 4px 12px rgba(0,0,0,0.08);
       transition: transform 0.2s ease, box-shadow 0.2s ease;
     }
 
     .box:hover {
-      transform: translateY(-3px);
+      transform: translateY(-2px);
       box-shadow: 0 8px 18px rgba(0,0,0,0.15);
     }
 
     .box h3 {
       margin-top: 0;
-      font-size: 1.4rem;
+      font-size: 1.3rem;
       color: #444;
     }
 
     label {
       display: inline-block;
-      margin: 10px 15px 0 0;
+      margin: 8px 15px 0 0;
       cursor: pointer;
     }
 
@@ -96,52 +100,102 @@
       color: #555;
     }
 
-    .answer {
-      margin-top: 15px;
-      padding: 12px;
+    /* Gemini Chat Box */
+    .chat-box {
+      display: flex;
+      flex-direction: column;
+      height: 100%;
+    }
+
+    .chat-messages {
+      flex: 1;
+      overflow-y: auto;
+      padding: 15px;
+      border-radius: 12px;
+      background: #fdfdfd;
+      border: 1px solid #ddd;
+    }
+
+    .msg {
+      margin: 8px 0;
+      padding: 10px 15px;
+      border-radius: 12px;
+      max-width: 80%;
+      line-height: 1.4;
+    }
+
+    .user {
+      background: #667eea;
+      color: #fff;
+      margin-left: auto;
+      font-family: "Segoe UI Semibold", sans-serif;
+    }
+
+    .gemini {
       background: #f0f3ff;
-      border-radius: 10px;
-      font-style: italic;
       color: #333;
+      margin-right: auto;
+      font-style: italic;
+      font-family: Georgia, serif;
+    }
+
+    .chat-input {
+      display: flex;
+      margin-top: 12px;
+      gap: 10px;
+    }
+
+    .chat-input input {
+      flex: 1;
+      padding: 10px;
+      border: 1px solid #ccc;
+      border-radius: 8px;
     }
 
     footer {
       text-align: center;
-      padding: 20px;
+      padding: 15px;
       color: #888;
       font-size: 0.9rem;
+      background: #fff;
+      border-top: 1px solid #eee;
     }
   </style>
 </head>
 <body>
   <header>
     <h1>🐾 Animal Selector & File Uploader</h1>
-    <p>Choose an animal, upload files, and ask Gemini anything!</p>
+    <p>Choose an animal, upload files, and chat with Gemini</p>
   </header>
 
-  <div class="container">
-    <!-- Animal Box -->
-    <div class="box">
-      <h3>Select an Animal</h3>
-      <label><input type="radio" name="animal" value="cat"> Cat</label>
-      <label><input type="radio" name="animal" value="dog"> Dog</label>
-      <label><input type="radio" name="animal" value="elephant"> Elephant</label>
-      <div id="animalResult"></div>
+  <div class="main">
+    <!-- Left Column -->
+    <div>
+      <!-- Animal Box -->
+      <div class="box">
+        <h3>Select an Animal</h3>
+        <label><input type="radio" name="animal" value="cat"> Cat</label>
+        <label><input type="radio" name="animal" value="dog"> Dog</label>
+        <label><input type="radio" name="animal" value="elephant"> Elephant</label>
+        <div id="animalResult"></div>
+      </div>
+
+      <!-- File Upload Box -->
+      <div class="box" style="margin-top:20px;">
+        <h3>Upload a File</h3>
+        <input type="file" id="fileInput">
+        <div id="fileResult" class="preview"></div>
+      </div>
     </div>
 
-    <!-- File Upload Box -->
-    <div class="box">
-      <h3>Upload a File</h3>
-      <input type="file" id="fileInput">
-      <div id="fileResult" class="preview"></div>
-    </div>
-
-    <!-- Gemini Q&A Box -->
-    <div class="box">
-      <h3>Ask Gemini</h3>
-      <input type="text" id="question" placeholder="Type your question..." style="width:70%; padding:10px; border-radius:8px; border:1px solid #ccc;">
-      <button onclick="askGemini()">Ask</button>
-      <div id="geminiAnswer" class="answer"></div>
+    <!-- Right Column: Gemini Chat -->
+    <div class="box chat-box">
+      <h3>💬 Gemini Chat</h3>
+      <div id="chatMessages" class="chat-messages"></div>
+      <div class="chat-input">
+        <input type="text" id="question" placeholder="Type your question...">
+        <button onclick="askGemini()">Send</button>
+      </div>
     </div>
   </div>
 
@@ -201,16 +255,41 @@
       }
     });
 
-    // Ask Gemini
+    // Gemini Chat
     async function askGemini() {
-      const question = document.getElementById("question").value;
+      const input = document.getElementById("question");
+      const question = input.value.trim();
+      if (!question) return;
+
+      const chatBox = document.getElementById("chatMessages");
+
+      // Add user message
+      const userMsg = document.createElement("div");
+      userMsg.className = "msg user";
+      userMsg.textContent = question;
+      chatBox.appendChild(userMsg);
+
+      input.value = "";
+
+      // Scroll
+      chatBox.scrollTop = chatBox.scrollHeight;
+
+      // Send to backend
       const res = await fetch("/ask_gemini", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ question })
       });
       const data = await res.json();
-      document.getElementById("geminiAnswer").textContent = data.answer || data.error;
+
+      // Add Gemini response
+      const geminiMsg = document.createElement("div");
+      geminiMsg.className = "msg gemini";
+      geminiMsg.textContent = data.answer || data.error;
+      chatBox.appendChild(geminiMsg);
+
+      // Scroll to bottom
+      chatBox.scrollTop = chatBox.scrollHeight;
     }
   </script>
 </body>
