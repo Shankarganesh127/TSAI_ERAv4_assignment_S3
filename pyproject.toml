@@ -1,0 +1,9 @@
+[project]
+name = "erav4-gemini-api-webpage-0509"
+version = "0.1.0"
+description = "Add your description here"
+readme = "README.md"
+requires-python = ">=3.10"
+dependencies = ['Flask',
+'google-generativeai',
+'Werkzeug']
